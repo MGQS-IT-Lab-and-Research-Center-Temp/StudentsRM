@@ -1,0 +1,73 @@
+@model StudentsRM.Models.Student.CreateStudentModel
+
+@{
+    ViewData["Title"] = "Create A Email";
+}
+
+@* @section Styles {
+    @{
+        await Html.RenderPartialAsync("_Select2CssPartial");
+    }
+} *@
+
+<div class="body">
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create">
+                <div class="col-md-12 mb-2">
+                    <label class="form-label">FirstName:</label>
+                    <input type="text" class="form-control" placeholder="Enter your FirstName" asp-for="FirstName">
+                    <span asp-validation-for="FirstName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-2">
+                    <label class="form-label">MiddleName:</label>
+                    <input type="text" class="form-control" placeholder="Enter your MiddleName" asp-for="MiddleName">
+                    <span asp-validation-for="MiddleName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-2">
+                    <label class="form-label">LastName:</label>
+                    <input type="text" class="form-control" placeholder="Enter your LastName" asp-for="LastName">
+                    <span asp-validation-for="LastName" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-2">
+                    <label class="form-label">Email:</label>
+                    <input type="email" class="form-control" placeholder="Enter your Email" asp-for="Email">
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-2">
+                    <label class="form-label">Gender:</label>
+                    <input type="text" class="form-control" placeholder="Enter your Gender" asp-for="Gender">
+                    <span asp-validation-for="Gender" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-2">
+                    <label class="form-label">PhoneNumber:</label>
+                    <input type="text" class="form-control" placeholder="Enter your Phone Number" asp-for="PhoneNumber">
+                    <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-2">
+                    <label class="form-label">HomeAddress:</label>
+                    <input type="text" class="form-control" placeholder="Enter your HomeAddress" asp-for="HomeAddress">
+                    <span asp-validation-for="HomeAddress" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12 mb-2">
+                    <label class="form-label">Course:</label>
+                    <select asp-for="CourseIds" class="form-control" asp-items="@ViewBag.Courses" data-placeholder="Select Categories" multiple>
+                    </select>
+                    <span asp-validation-for="CourseIds" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-12">
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
