@@ -13,7 +13,6 @@ namespace StudentsRM.Models.Student
         public string HomeAddress { get; set; }
         public string PhoneNumber { get; set; }
         public DateTime DateAdmitted { get; set; }
-        public List<string> CourseIds { get; set; }
-        public List<CourseViewModel> Courses { get; set; }
+        public string CourseId { get; set; }
     }
 }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using StudentsRM.Entities;
 using StudentsRM.Models;
 using StudentsRM.Models.Results;
@@ -9,57 +10,60 @@ namespace StudentsRM.Service.Implementation
     public class ResultService : IResultService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public ResultService(IUnitOfWork unitOfWork)
+        public ResultService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;           
             _unitOfWork = unitOfWork;
         }
 
-        public BaseResponseModel Create(AddResultViewModel request, string courseId, string lecturerId)
+        public BaseResponseModel Create(AddResultViewModel request,string studentId)
         {
             var response = new BaseResponseModel();
-            var lecturer = _unitOfWork.Lecturers.Get(lecturerId);
+            var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
+            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
             var course = _unitOfWork.Courses.Get(lecturer.CourseId);
-            var semester = _unitOfWork.Semesters.Get(request.SemesterId);
-            var students = _unitOfWork.Students.GetAll(c => c.Courses == lecturer.Course);
+            var selectSemester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
+            var student = _unitOfWork.Students.Get(studentId);
 
-            // var studentCourse = _unitOfWork.Students.GetStudentCourse(students.)
 
-            // if (lecturer.Course.Id == students)
-            // {
-                
-            // }
-            
-            var ResultView = students.Select(
-                s => new ResultViewModel
-                {
-                    // CourseId = s.Courses,
-                    StudentId = s.Id,
-                    Score = request.Score,
-                }
-            ).ToList();
-            
-            foreach (var student in students)
+            if (!lecturer.Course.Id.Equals(student.CourseId))
             {
-                var result = new Result
-                {
-                    CourseId = course.Id,
-                    Course = course,
-                    SemesterId = semester.Id, 
-                    Semester = semester,
-                    Student = student,
-                    StudentId = student.Id,
-                    Score = request.Score,
-                };
-                student.Results.Add(result);
+                response.Message = "An error occurred";
+                return response;
             }
-            return null;
+            
+            var result = new Result
+            {
+                CourseId = course.Id,
+                Course = course,
+                SemesterId = selectSemester.Id, 
+                Semester = selectSemester,
+                Student = student,
+                StudentId = student.Id,
+                Score = request.Score,
+                RegisteredBy = lecturer.LastName,
+                ModifiedBy = ""
+            };
+            student.Results.Add(result);
+                
 
-        }
+            try
+            {
+                _unitOfWork.Results.Create(result);            
+                _unitOfWork.SaveChanges();
+                response.Status = true;
+                response.Message = "Succcess";
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"An error occurred {ex.Message}";
+                return response;
+            }
 
-        public BaseResponseModel Create(AddResultViewModel request, string courseId, List<string> studentId)
-        {
-            throw new NotImplementedException();
         }
 
         public BaseResponseModel Delete(string resultId)
@@ -72,9 +76,29 @@ namespace StudentsRM.Service.Implementation
             throw new NotImplementedException();
         }
 
-        public ResultResponseModel GetResult(string resultId)
+        public ResultResponseModel CheckStudentResult()
         {
-            throw new NotImplementedException();
+            var response = new ResultResponseModel();
+            var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var getStudent = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
+            var student = _unitOfWork.Students.Get(getStudent.LecturerStudentId);
+            var result = _unitOfWork.Results.Get(r => r.StudentId == student.Id);
+
+            response.Data = new ResultViewModel
+            {
+                Id = result.Id,
+                StudentId = result.StudentId,
+                SemesterId = result.SemesterId,
+                CourseId = result.CourseId,
+                SemesterName = result.Semester.SemesterName,
+                StudentName = result.Student.FirstName,
+                CourseName = result.Course.Name,
+                Score = result.Score 
+            };
+            
+            response.Status = true;
+            response.Message = "Succcess";
+            return response;
         }
 
         public BaseResponseModel Update(string resultId, UpdateResultViewModel update)
@@ -82,4 +106,4 @@ namespace StudentsRM.Service.Implementation
             throw new NotImplementedException();
         }
     }
-}
+} 

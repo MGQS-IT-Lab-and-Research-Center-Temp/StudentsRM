@@ -1,9 +1,11 @@
 using StudentsRM.Service.Interface;
 using Microsoft.AspNetCore.Mvc;
 using StudentsRM.Models.Lecturer;
+using Microsoft.AspNetCore.Authorization;
 
 namespace StudentsRM.Controllers
 {
+    [Authorize]
     public class LecturerController : Controller
     {
         private readonly ILecturerService _lecturerService;
@@ -24,6 +26,7 @@ namespace StudentsRM.Controllers
             return View(response.Data);
         }
          
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewBag.Courses = _courseService.SelectCourses();
@@ -33,7 +36,7 @@ namespace StudentsRM.Controllers
             return View();
         }
          
-         [HttpPost]
+        [HttpPost]
         public IActionResult Create(CreateLecturerModel request)
         {
             var response = _lecturerService.Create(request);
@@ -46,5 +49,15 @@ namespace StudentsRM.Controllers
             ViewData["Message"] = response.Message;
             return RedirectToAction("Index");
         }
+        
+        public IActionResult GetLecturer(string Id)
+        {
+            var response = _lecturerService.GetLecturer(Id);
+            ViewData["Message"] = "";
+            ViewData["Status"] = false;
+
+            return View(response.Data);
+        }
+        
     }
 }

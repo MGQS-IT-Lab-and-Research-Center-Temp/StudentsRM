@@ -9,6 +9,7 @@ namespace StudentsRM.Service.Interface
         BaseResponseModel Update(string studentId, UpdateStudentViewModel update);
         BaseResponseModel Delete(string studentId);
         StudentResponseModel GetStudent(string studentId);
+        StudentsResponseModel GetAllLecturerStudents();
         StudentsResponseModel GetAll();
     }
 }

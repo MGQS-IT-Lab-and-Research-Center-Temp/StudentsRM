@@ -13,12 +13,31 @@ namespace StudentsRM.Repository.Implementation
             
         }
 
-        public string GetStudentCourse(Course course)
+        public List<Course> GetStudentByCourseId(string courseId)
         {
-            var students = _context.StudentsCourses
-            .Where(c => c.Course == course)
-            .Select(c => c.CourseId).ToString();
+            var students = _context.Courses
+            .Where(c => c.Id.Equals(courseId))
+            .ToList();
             return students;
+        }
+
+        public Student GetStudentResult(Expression<Func<Student, bool>> expression)
+        {
+            var student = _context.Students
+                .Include(s => s.Course)
+                .Include(s => s.Results)
+                .SingleOrDefault(expression);
+
+            return student;
+        }
+
+        public Student GetStudent(Expression<Func<Student, bool>> expression)
+        {
+            var student = _context.Students
+                .Include(s => s.Course)
+                .SingleOrDefault(expression);
+
+            return student;
         }
     }
 }

@@ -5,6 +5,7 @@ using StudentsRM.Service.Interface;
 using StudentsRM.Entities;
 using System.Linq.Expressions;
 using StudentsRM.Helper;
+using System.Security.Claims;
 
 namespace StudentsRM.Service.Implementation
 {
@@ -25,6 +26,7 @@ namespace StudentsRM.Service.Implementation
             string saltString = HashingHelper.GenerateSalt();
             string hashedPassword = HashingHelper.HashPassword(defaultPassword, saltString);
             var createdBy = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var selectCourse = _unitOfWork.Courses.Get(request.CourseId);
 
             var ifExist = _unitOfWork.Lecturers.Exists(s => (s.Email == request.Email));
             if (ifExist)
@@ -43,8 +45,11 @@ namespace StudentsRM.Service.Implementation
                 HomeAddress = request.HomeAddress,
                 PhoneNumber = request.PhoneNumber,
                 RegisteredBy = createdBy,
-                DateAdmitted = DateTime.Today
-                // DateCreated = DateTime.Today,
+                DateAdmitted = DateTime.Today,
+                Course = selectCourse,
+                CourseId = selectCourse.Id,
+                DateCreated = DateTime.Today,
+                ModifiedBy = "",
             };
 
             roleName ??= "Student";
@@ -64,24 +69,25 @@ namespace StudentsRM.Service.Implementation
                 PasswordHash = hashedPassword,
                 RoleId = role.Id,
                 RegisteredBy = "Admin",
-                CheckUserId = student.Id
+                ModifiedBy = "",
+                LecturerStudentId = student.Id
             };
             
-            var Courses = _unitOfWork.Courses.GetAllByIds(request.CourseIds);
-            var studentCourses = new HashSet<StudentCourse>();
-            foreach (var course in Courses)
-            {
-                var studentCourse = new StudentCourse
-                {
-                    CourseId = course.Id,
-                    StudentId = student.Id,
-                    Course = course,
-                    Student = student,
-                    RegisteredBy = "Admin"
-                };
-                studentCourses.Add(studentCourse);
-            }
-            student.Courses = studentCourses;
+            // var Courses = _unitOfWork.Courses.GetAllByIds(request.CourseIds);
+            // var studentCourses = new HashSet<StudentCourse>();
+            // foreach (var course in Courses)
+            // {
+            //     var studentCourse = new StudentCourse
+            //     {
+            //         CourseId = course.Id,
+            //         StudentId = student.Id,
+            //         Course = course,
+            //         Student = student,
+            //         RegisteredBy = "Admin"
+            //     };
+            //     studentCourses.Add(studentCourse);
+            // }
+            // student.Courses = studentCourses;
             
             try
             {
@@ -122,6 +128,7 @@ namespace StudentsRM.Service.Implementation
                 response.Data = students.Select(
                     students => new StudentViewModel 
                     {
+                        Id = students.Id,
                         FirstName = students.FirstName,
                         MiddleName = students.MiddleName,
                         LastName = students.LastName,
@@ -143,30 +150,82 @@ namespace StudentsRM.Service.Implementation
             return response;
         }
 
+        public StudentsResponseModel GetAllLecturerStudents()
+        {
+            var response = new StudentsResponseModel();
+            try
+            {
+                var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+                var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
+                var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
+                Expression<Func<Student, bool>> expression = s => s.IsDeleted == false;
+                var students = _unitOfWork.Students.GetAll(expression);
+                // var GetCourse = _unitOfWork.Students.GetStudentCourse()
+
+                if (students is null)
+                {
+                    response.Message = "No student found on System";
+                    return response;
+                }
+
+                response.Data = students.Select(
+                    students => new StudentViewModel 
+                    {
+                        Id = students.Id,
+                        FirstName = students.FirstName,
+                        MiddleName = students.MiddleName,
+                        LastName = students.LastName,
+                        Course = students.Course.Name,
+                        HomeAddress = students.HomeAddress,
+                        DateAdmitted = students.DateAdmitted,
+                        Gender = students.Gender,
+                        Email = students.Email
+                    }).ToList();
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"An error occurred {ex.Message}";
+                return response;
+            }
+            response.Status = true;
+            response.Message = "Success";
+            return response;
+        }
+
         public StudentResponseModel GetStudent(string studentId)
         {
             var response = new StudentResponseModel();
 
-            Expression<Func<Student, bool>> expression = s => (s.Id == studentId) && (s.IsDeleted == false);
-
-            var ifExist = _unitOfWork.Students.Exists(expression);
+            var ifExist = _unitOfWork.Students.Exists(s =>
+                                (s.Id == studentId)
+                                && (s.Id == studentId
+                                && s.IsDeleted == false));    
 
             if (!ifExist)
             {
                 response.Message = "Student is not registered on system";
                 return response;
+            }
+            try
+            {
+                var student = _unitOfWork.Students.Get(studentId);
+                response.Data = new StudentViewModel
+                {
+                    Id = student.Id,
+                    FullName =  $"{student.FirstName} {student.MiddleName} {student.LastName}",
+                    Email = student.Email,
+                };
+                response.Message = "Success";
+                response.Status = true;
+                
+            }
+            catch (System.Exception)
+            {
+                response.Message = "An error occurred";
+                return response;
             } 
              
-            var student = _unitOfWork.Students.Get(studentId);
-            response.Data = new StudentViewModel
-            {
-                Id = student.Id,
-                FullName =  $"{student.FirstName} {student.MiddleName} {student.LastName}",
-                Email = student.Email,
-                // Course = student.Courses.Select(c => c.Course.Name).ToString()
-            };
-            response.Message = "Success";
-            response.Status = true;
+            
             return response;
         }
  
@@ -174,5 +233,6 @@ namespace StudentsRM.Service.Implementation
         {
             throw new NotImplementedException();
         }
+
     }
 }

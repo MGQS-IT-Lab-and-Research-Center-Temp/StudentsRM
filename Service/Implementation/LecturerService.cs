@@ -63,7 +63,7 @@ namespace lecturersRM.Service.Implementation
                 PasswordHash = hashedPassword,
                 RoleId = role.Id,
                 RegisteredBy = "Admin",
-                CheckUserId = lecturer.Id
+                LecturerStudentId = lecturer.Id
             };
 
             

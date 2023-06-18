@@ -29,8 +29,9 @@ namespace StudentsRM.Service.Implementation
             {
                 RoleName = request.RoleName,
                 Description = request.Description,
-                // DateCreated = DateTime.Now,
-                RegisteredBy = "Admin"
+                DateCreated = DateTime.Now,
+                RegisteredBy = "Admin",
+                ModifiedBy = ""
             };
 
             try

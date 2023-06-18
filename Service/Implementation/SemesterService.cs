@@ -4,6 +4,7 @@ using StudentsRM.Service.Interface;
 using StudentsRM.Entities;
 using System.Linq.Expressions;
 using StudentsRM.Models.Semester;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace StudentsRM.Service.Implementation
 {  
@@ -24,7 +25,9 @@ namespace StudentsRM.Service.Implementation
                 SemesterName = request.SemesterName,
                 StartDate = request.StartDate,
                 EndDate = request.EndDate,
-                RegisteredBy = "Admin"
+                CurrentSemester = true,
+                RegisteredBy = "Admin",
+                ModifiedBy = "",
             };
 
             try
@@ -90,6 +93,16 @@ namespace StudentsRM.Service.Implementation
         public BaseResponseModel Update(string semesterId, UpdateSemesterViewModel update)
         {
             throw new NotImplementedException();
+        }
+
+        public IEnumerable<SelectListItem> SelectSemester()
+        {
+            return _unitOfWork.Semesters.SelectAll().Select(sem => new SelectListItem()
+            {
+                Text = sem.SemesterName,
+                Value = sem.Id
+            }
+            );
         }
     }
 }

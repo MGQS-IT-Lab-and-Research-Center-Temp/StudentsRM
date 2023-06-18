@@ -14,6 +14,6 @@ namespace StudentsRM.Models.Student
         public string HomeAddress { get; set; }
         public string PhoneNumber { get; set; }
         public DateTime DateAdmitted { get; set; }
-        public List<string> Course { get; set; }
+        public string Course { get; set; }
     }
 }

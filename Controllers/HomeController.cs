@@ -14,13 +14,14 @@ public class HomeController : Controller
 {
     private readonly IUserService _userService;
     private readonly INotyfService _notyf;
-
+    
     public HomeController(IUserService userService, INotyfService notyf)
     {
         _userService = userService;
         _notyf = notyf;
     }
-
+    
+    [Authorize]
     public IActionResult Index()
     {
         return View();
@@ -68,7 +69,12 @@ public class HomeController : Controller
             return RedirectToAction("AdminDashboard", "Home");
         }
 
-        return RedirectToAction("Index", "Home");
+        if (user.RoleName == "Student")
+        {
+            return RedirectToAction("GetStudent", "Student");
+        }
+
+        return RedirectToAction("Index", "Home", response.Data.CheckUserId);
     }
 
     public IActionResult Privacy()

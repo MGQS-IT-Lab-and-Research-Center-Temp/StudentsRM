@@ -1,9 +1,12 @@
+using System.Linq.Expressions;
 using StudentsRM.Entities;
 
 namespace StudentsRM.Repository.Interface
 {
     public interface IStudentRepository : IRepository<Student>
     {
-        public string GetStudentCourse(Course course);
+        List<Course> GetStudentByCourseId(string courseId);
+        Student GetStudentResult(Expression<Func<Student, bool>> expression);
+        Student GetStudent(Expression<Func<Student, bool>> expression);
     }
 }
