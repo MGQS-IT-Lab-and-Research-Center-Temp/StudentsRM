@@ -1,6 +1,6 @@
 using StudentsRM.Models.Course;
 
-namespace StudentsRM.Models.Student
+namespace StudentsRM.Models.Students
 {
     public class CreateStudentModel
     {

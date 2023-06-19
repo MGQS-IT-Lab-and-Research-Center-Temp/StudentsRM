@@ -69,11 +69,13 @@ namespace StudentsRM.Context
                     HashSalt = salt,
                     PasswordHash = HashingHelper.HashPassword(password, salt),
                     RoleId = admin.Id,
+                    Role = admin,
                     RegisteredBy = "System",
                     DateCreated = DateTime.Now,
                     IsDeleted = false,
                     ModifiedBy = "",
-                    LastModified = new DateTime()
+                    LastModified = new DateTime(),
+                    LecturerStudentId = ""
                 }
             };
 

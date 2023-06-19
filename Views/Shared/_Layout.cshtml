@@ -24,7 +24,7 @@
                             @if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                   <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                                 </li>
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Role" asp-action="Index">Role</a>
@@ -41,11 +41,55 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-dark" asp-area="" asp-controller="Semester" asp-action="Index">Semester</a>
                                 </li>     
-                            }                  
+                            }
+
+                            @if (User.IsInRole("Student"))
+                            {
+                                <li class="nav-item">
+                                   <a class="nav-link text-dark" asp-area="" asp-controller="Result" asp-action="CheckResult">Check My Result</a>
+                                </li>
+                            }
+
+                            @if (User.IsInRole("Lecturer"))
+                            {
+                                <li class="nav-item">
+                                   <a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="GetLecturerStudents">Get My Student</a>
+                                </li>
+                                <li class="nav-item">
+                                   <a class="nav-link text-dark" asp-area="" asp-controller="Result" asp-action="Create">Create Result</a>
+                                </li>
+                            }               
                         }
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
+                    </ul>
+
+                    <ul class="navbar-nav justify-content-end">
+                        @if (User != null && User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-success" asp-controller="Home" asp-action="Logout">
+                                    <i class="fas fa-power-off"></i>
+                                    Logout
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-success" asp-controller="Home" asp-action="UpdatePassword">
+                                    <i class="fas fa-power-off"></i>
+                                    ChangePassword
+                                </a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-success" asp-controller="Home" asp-action="Login">
+                                    <i class="fas fa-user"></i>
+                                    Login
+                                </a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

@@ -41,7 +41,7 @@ namespace lecturersRM.Service.Implementation
                 PhoneNumber = request.PhoneNumber,
                 HomeAddress = request.HomeAddress,
                 RegisteredBy = "Admin",
-                // DateCreated = DateTime.Today,
+                DateCreated = DateTime.Today,
                 Course = selectCourse,
                 CourseId = selectCourse.Id
             };
@@ -117,8 +117,7 @@ namespace lecturersRM.Service.Implementation
             var response = new LecturersResponseModel();
             try
             {
-                // Expression<Func<Lecturer, bool>> expression = l => l.IsDeleted == false;
-                var lecturers = _unitOfWork.Lecturers.GetAll(l => l.IsDeleted == false);
+                var lecturers = _unitOfWork.Lecturers.GetAllLecturers(l => l.IsDeleted == false);
 
                 if (lecturers.Count == 0 || lecturers is null)
                 {
@@ -170,7 +169,7 @@ namespace lecturersRM.Service.Implementation
                 Id = lecturer.Id,
                 FullName =  $"{lecturer.FirstName} {lecturer.MiddleName} {lecturer.LastName}",
                 Email = lecturer.Email,
-                Course = lecturer.Course.Name
+                // Course = lecturer.Course.Name
             };
             response.Message = "Success";
             response.Status = true;

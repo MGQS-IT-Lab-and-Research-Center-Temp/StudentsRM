@@ -1,11 +1,11 @@
 using StudentsRM.Models;
-using StudentsRM.Models.Student;
 using StudentsRM.Repository.Interface;
 using StudentsRM.Service.Interface;
 using StudentsRM.Entities;
 using System.Linq.Expressions;
 using StudentsRM.Helper;
 using System.Security.Claims;
+using StudentsRM.Models.Students;
 
 namespace StudentsRM.Service.Implementation
 {
@@ -116,10 +116,10 @@ namespace StudentsRM.Service.Implementation
             try
             {
                 Expression<Func<Student, bool>> expression = s => s.IsDeleted == false;
-                var students = _unitOfWork.Students.GetAll(expression);
+                var students = _unitOfWork.Students.GetAllStudent(expression);
                 // var GetCourse = _unitOfWork.Students.GetStudentCourse()
 
-                if (students is null)
+                if (students is null || students.Count == 0)
                 {
                     response.Message = "No student found on System";
                     return response;
@@ -132,9 +132,8 @@ namespace StudentsRM.Service.Implementation
                         FirstName = students.FirstName,
                         MiddleName = students.MiddleName,
                         LastName = students.LastName,
-                        // Course = _unitOfWork.Students.GetStudentCourse(students.Courses)
-                        // Course = students.Courses.Select(c => c.Course).Select(c => c.Name).ToList(),
-                        HomeAddress = students.HomeAddress,
+                        CourseId = students.CourseId,
+                        Course = students.Course.Name,
                         DateAdmitted = students.DateAdmitted,
                         Gender = students.Gender,
                         Email = students.Email
@@ -153,14 +152,14 @@ namespace StudentsRM.Service.Implementation
         public StudentsResponseModel GetAllLecturerStudents()
         {
             var response = new StudentsResponseModel();
+           
+            var userIdClaim = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
+            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
             try
             {
-                var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-                var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
-                var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
-                Expression<Func<Student, bool>> expression = s => s.IsDeleted == false;
-                var students = _unitOfWork.Students.GetAll(expression);
-                // var GetCourse = _unitOfWork.Students.GetStudentCourse()
+                Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) && (s.CourseId == lecturer.CourseId);
+                var students = _unitOfWork.Students.GetAllStudent(expression);
 
                 if (students is null)
                 {
@@ -176,7 +175,6 @@ namespace StudentsRM.Service.Implementation
                         MiddleName = students.MiddleName,
                         LastName = students.LastName,
                         Course = students.Course.Name,
-                        HomeAddress = students.HomeAddress,
                         DateAdmitted = students.DateAdmitted,
                         Gender = students.Gender,
                         Email = students.Email
@@ -228,11 +226,10 @@ namespace StudentsRM.Service.Implementation
             
             return response;
         }
- 
-        public BaseResponseModel Update(string studentId, UpdateStudentViewModel update)
+
+        public BaseResponseModel Update(UpdateStudentViewModel update, string studentId)
         {
             throw new NotImplementedException();
         }
-
     }
 }

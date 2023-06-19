@@ -10,10 +10,12 @@ namespace StudentsRM.Service.Implementation
     public class UserService : IUserService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IUnitOfWork unitOfWork)
+        public UserService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
+            _httpContextAccessor = httpContextAccessor;
         }
         public UserResponseModel GetUser(string userId)
         {
@@ -67,10 +69,6 @@ namespace StudentsRM.Service.Implementation
                     RoleId = user.RoleId,
                     RoleName = user.Role.RoleName,
                 };
-                // if (user.Role.RoleName == "Student")
-                // {
-                //     var student = _unitOfWork.Students.Get(user.CheckUserId);
-                // }
                 response.Message = "Welcome";
                 response.Status = true;
 
@@ -83,6 +81,37 @@ namespace StudentsRM.Service.Implementation
             }
         }
 
+        public BaseResponseModel UpdatePassword(string userId, UpdateUserViewModel update)
+        {
+            var response = new BaseResponseModel();
+            string modifiedBy = "";
+            string saltString = HashingHelper.GenerateSalt();
+            string hashedPassword = HashingHelper.HashPassword(update.Password, saltString);
+            var userExist = _unitOfWork.Users.Exists(u => u.Id == userId);
 
+            if (!userExist)
+            {
+                response.Message = "user does not exist.";
+                return response;
+            }
+
+            var user = _unitOfWork.Users.Get(userId);
+            user.PasswordHash = hashedPassword;
+            user.ModifiedBy = modifiedBy;
+            
+            try
+            {
+                _unitOfWork.Users.Update(user);
+                _unitOfWork.SaveChanges();
+                response.Message = "Password updated successfully.";
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"Could not update the user: {ex.Message}";
+                return response;
+            }
+        }
     }
 }

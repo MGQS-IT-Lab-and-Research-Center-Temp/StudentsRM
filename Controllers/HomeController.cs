@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
+using StudentsRM.Models.User;
 
 namespace StudentsRM.Controllers;
 
@@ -64,28 +65,53 @@ public class HomeController : Controller
 
         _notyf.Success(response.Message);
 
-        if (user.RoleName == "Admin")
-        {
-            return RedirectToAction("AdminDashboard", "Home");
-        }
+        // if (user.RoleName == "Admin")
+        // {
+        //     return RedirectToAction("AdminDashboard", "Home");
+        // }
 
         if (user.RoleName == "Student")
         {
-            return RedirectToAction("GetStudent", "Student");
+            return RedirectToAction("GetStudent", "Student", response.Data.CheckUserId);
         }
 
-        return RedirectToAction("Index", "Home", response.Data.CheckUserId);
+        return RedirectToAction("Index", "Home");
     }
 
     public IActionResult Privacy()
     {
         return View();
     }
+
+    public IActionResult LogOut()
+    {
+        HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        _notyf.Success("You have successfully signed out!");
+        return RedirectToAction("Login", "Home");
+    }
     
     [Authorize(Roles = "Admin")]
     public IActionResult AdminDashboard()
     {
         return View();
+    }
+
+    public IActionResult UpdatePassword()
+    {
+        return View();
+    }
+    [HttpPost]
+    public IActionResult UpdatePassword(string id, UpdateUserViewModel request)
+    {
+        var response = _userService.UpdatePassword(id, request);
+        if (response.Status is false)
+            {
+                _notyf.Error(response.Message);
+                return View();
+            }
+
+            _notyf.Success(response.Message);
+            return RedirectToAction("Index", "Home");
     }
 
 }

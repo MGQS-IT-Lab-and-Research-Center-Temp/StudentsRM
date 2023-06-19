@@ -1,6 +1,6 @@
-@model StudentsRM.Models.Students.StudentViewModel
+@model StudentsRM.Models.Lecturer.LecturerViewModel
 @{
-    ViewData["Title"] = "Student Details";
+    ViewData["Title"] = "Lecturer Details";
 }
 
 <h3 class="card-title">
@@ -14,10 +14,9 @@
         <dl class="row">
             <dt class="col-sm-4">FullName</dt>
             <dd class="col-sm-8">@Model.FullName</dd>
-            <dt class="col-sm-4">HomeAddress</dt>
+            <dt class="col-sm-4">Email</dt>
             <dd class="col-sm-8">@Model.Email</dd>
         </dl>
-
-        <a asp-controller="Studnt" asp-action="Index" class="btn btn-secondary">Back to list</a>
+        <a asp-controller="Lecturer" asp-action="Index" class="btn btn-secondary">Back to list</a>
     }
 </div>

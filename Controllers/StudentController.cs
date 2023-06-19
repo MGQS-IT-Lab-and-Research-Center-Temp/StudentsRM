@@ -1,7 +1,8 @@
 using StudentsRM.Service.Interface;
-using StudentsRM.Models.Student;
+using StudentsRM.Models.Students;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using AspNetCoreHero.ToastNotification.Abstractions;
 
 namespace StudentsRM.Controllers
 {
@@ -10,19 +11,28 @@ namespace StudentsRM.Controllers
     {
         private readonly IStudentService _studentService;
         private readonly ICourseService _courseService;
+        private readonly INotyfService _notyf;
 
-        public StudentController(IStudentService studentService, ICourseService courseService)
+        public StudentController(IStudentService studentService, ICourseService courseService, INotyfService notyf)
         {
             _studentService = studentService;
             _courseService = courseService;
+            _notyf = notyf;
         }
         
         [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var response = _studentService.GetAll();
-            ViewData["Message"] = response.Message;
-            ViewData["Status"] = response.Status;
+            // ViewData["Message"] = response.Message;
+            // ViewData["Status"] = response.Status;
+            if (response.Status is false)
+            {
+                _notyf.Error(response.Message);
+                return View();
+            }
+
+            _notyf.Success(response.Message);
             return View(response.Data);
         }
 
@@ -42,11 +52,11 @@ namespace StudentsRM.Controllers
             var response = _studentService.Create(request);
             if (response.Status is false)
             {
-                ViewData["Message"] = response.Message;
+                _notyf.Error(response.Message);
                 return View();
             }
 
-            ViewData["Message"] = response.Message;
+            _notyf.Success(response.Message);
             return RedirectToAction("Index");
         }
 
@@ -57,7 +67,8 @@ namespace StudentsRM.Controllers
             ViewData["Status"] = response.Status;
             return View(response.Data);
         }
-
+        
+        // [Authorize(Roles = "Lecturer")]
         public IActionResult GetLecturerStudents()
         {
             var response = _studentService.GetAllLecturerStudents();

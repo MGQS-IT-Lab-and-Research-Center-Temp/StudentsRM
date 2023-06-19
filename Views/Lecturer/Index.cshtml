@@ -37,6 +37,11 @@
                     <td>@item.Gender</td>
                     <td>@item.Email</td>
                     <td>@item.HomeAddress</td>
+                    <td>
+                        <div class="btn-group">
+                            <a asp-controller="Lecturer" asp-action="GetLecturer" asp-route-id="@item.Id" class="btn btn-primary">View</a>
+                        </div>
+                    </td>
                 </tr>
                 count++;
             }

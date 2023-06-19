@@ -24,6 +24,7 @@ namespace StudentsRM.Repository.Implementation
         public Student GetStudentResult(Expression<Func<Student, bool>> expression)
         {
             var student = _context.Students
+                .Where(expression)
                 .Include(s => s.Course)
                 .Include(s => s.Results)
                 .SingleOrDefault(expression);
@@ -31,13 +32,14 @@ namespace StudentsRM.Repository.Implementation
             return student;
         }
 
-        public Student GetStudent(Expression<Func<Student, bool>> expression)
+        public List<Student> GetAllStudent(Expression<Func<Student, bool>> expression)
         {
-            var student = _context.Students
+            var students = _context.Students
+                .Where(expression)
                 .Include(s => s.Course)
-                .SingleOrDefault(expression);
+                .ToList();
 
-            return student;
+            return students;
         }
     }
 }
