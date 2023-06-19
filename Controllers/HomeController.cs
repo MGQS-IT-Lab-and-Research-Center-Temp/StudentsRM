@@ -101,9 +101,9 @@ public class HomeController : Controller
         return View();
     }
     [HttpPost]
-    public IActionResult UpdatePassword(string id, UpdateUserViewModel request)
+    public IActionResult UpdatePassword(UpdateUserViewModel request)
     {
-        var response = _userService.UpdatePassword(id, request);
+        var response = _userService.UpdatePassword(request);
         if (response.Status is false)
             {
                 _notyf.Error(response.Message);

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using StudentsRM.Helper;
 using StudentsRM.Models;
 using StudentsRM.Models.Auth;
@@ -81,13 +82,13 @@ namespace StudentsRM.Service.Implementation
             }
         }
 
-        public BaseResponseModel UpdatePassword(string userId, UpdateUserViewModel update)
+        public BaseResponseModel UpdatePassword(UpdateUserViewModel update)
         {
             var response = new BaseResponseModel();
-            string modifiedBy = "";
+            var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             string saltString = HashingHelper.GenerateSalt();
             string hashedPassword = HashingHelper.HashPassword(update.Password, saltString);
-            var userExist = _unitOfWork.Users.Exists(u => u.Id == userId);
+            var userExist = _unitOfWork.Users.Exists(u => u.Id == userIdClaim);
 
             if (!userExist)
             {
@@ -95,14 +96,16 @@ namespace StudentsRM.Service.Implementation
                 return response;
             }
 
-            var user = _unitOfWork.Users.Get(userId);
+            var user = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
+            user.HashSalt = saltString;
             user.PasswordHash = hashedPassword;
-            user.ModifiedBy = modifiedBy;
+            user.ModifiedBy = user.Email;
             
             try
             {
                 _unitOfWork.Users.Update(user);
                 _unitOfWork.SaveChanges();
+                response.Status = true;
                 response.Message = "Password updated successfully.";
 
                 return response;

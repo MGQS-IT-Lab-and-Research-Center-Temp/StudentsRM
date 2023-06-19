@@ -18,7 +18,56 @@ namespace StudentsRM.Service.Implementation
             _unitOfWork = unitOfWork;
         }
 
-        // public BaseResponseModel Create(AddResultViewModel request,string studentId)
+        public BaseResponseModel Create(AddResultViewModel request,string studentId)
+        {
+            var response = new BaseResponseModel();
+            var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
+            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
+            var course = _unitOfWork.Courses.Get(lecturer.CourseId);
+            var selectSemester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
+            var student = _unitOfWork.Students.Get(studentId);
+
+
+            if (!lecturer.Course.Id.Equals(student.CourseId)) 
+            {
+                response.Message = "An error occurred";
+                return response;
+            }
+            
+            var result = new Result
+            {
+                CourseId = course.Id,
+                Course = course,
+                SemesterId = selectSemester.Id, 
+                Semester = selectSemester,
+                Student = student,
+                StudentId = student.Id,
+                Score = request.Score,
+                RegisteredBy = lecturer.LastName,
+                ModifiedBy = ""
+            };
+            
+            student.Results.Add(result);
+                
+
+            try
+            {
+                _unitOfWork.Results.Create(result);            
+                _unitOfWork.SaveChanges();
+                response.Status = true;
+                response.Message = "Succcess";
+                return response;
+            } 
+            catch (Exception ex)
+            {
+                response.Message = $"An error occurred {ex.Message}";
+                return response;
+            }
+
+        }
+
+        // public BaseResponseModel Create(AddResultViewModel request)
         // {
         //     var response = new BaseResponseModel();
         //     var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
@@ -26,33 +75,32 @@ namespace StudentsRM.Service.Implementation
         //     var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
         //     var course = _unitOfWork.Courses.Get(lecturer.CourseId);
         //     var selectSemester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
-        //     var student = _unitOfWork.Students.Get(studentId);
+        //     var students = _unitOfWork.Students.GetAll(s => s.CourseId == lecturer.CourseId);
 
-
-        //     if (!lecturer.Course.Id.Equals(student.CourseId)) 
+        //     if (!lecturer.Course.Id.Equals(students.Select(s => s.CourseId))) 
         //     {
         //         response.Message = "An error occurred";
         //         return response;
-        //     }
-            
-        //     var result = new Result
-        //     {
-        //         CourseId = course.Id,
-        //         Course = course,
-        //         SemesterId = selectSemester.Id, 
-        //         Semester = selectSemester,
-        //         Student = student,
-        //         StudentId = student.Id,
-        //         Score = request.Score,
-        //         RegisteredBy = lecturer.LastName,
-        //         ModifiedBy = ""
-        //     };
-        //     student.Results.Add(result);
-                
+        //     }   
 
         //     try
         //     {
-        //         _unitOfWork.Results.Create(result);            
+        //         foreach (var student in students)
+        //         {
+        //             var result = new Result
+        //             {
+        //                 CourseId = course.Id,
+        //                 Course = course,
+        //                 SemesterId = selectSemester.Id, 
+        //                 Semester = selectSemester,
+        //                 Student = student,
+        //                 StudentId = student.Id,
+        //                 Score = request.Score,
+        //                 RegisteredBy = lecturer.LastName,
+        //             };
+        //             student.Results.Add(result);
+        //             _unitOfWork.Results.Create(result);
+        //         }            
         //         _unitOfWork.SaveChanges();
         //         response.Status = true;
         //         response.Message = "Succcess";
@@ -65,53 +113,6 @@ namespace StudentsRM.Service.Implementation
         //     }
 
         // }
-
-        public BaseResponseModel Create(AddResultViewModel request)
-        {
-            var response = new BaseResponseModel();
-            var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
-            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
-            var course = _unitOfWork.Courses.Get(lecturer.CourseId);
-            var selectSemester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
-            var students = _unitOfWork.Students.GetAll(s => s.CourseId == lecturer.CourseId);
-
-            if (!lecturer.Course.Id.Equals(students.Select(s => s.CourseId))) 
-            {
-                response.Message = "An error occurred";
-                return response;
-            }   
-
-            try
-            {
-                foreach (var student in students)
-                {
-                    var result = new Result
-                    {
-                        CourseId = course.Id,
-                        Course = course,
-                        SemesterId = selectSemester.Id, 
-                        Semester = selectSemester,
-                        Student = student,
-                        StudentId = student.Id,
-                        Score = request.Score,
-                        RegisteredBy = lecturer.LastName,
-                    };
-                    student.Results.Add(result);
-                    _unitOfWork.Results.Create(result);
-                }            
-                _unitOfWork.SaveChanges();
-                response.Status = true;
-                response.Message = "Succcess";
-                return response;
-            }
-            catch (Exception ex)
-            {
-                response.Message = $"An error occurred {ex.Message}";
-                return response;
-            }
-
-        }
 
         public BaseResponseModel Delete(string resultId)
         {
@@ -130,7 +131,7 @@ namespace StudentsRM.Service.Implementation
             var getStudent = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
             var semester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
             var student = _unitOfWork.Students.Get(getStudent.LecturerStudentId);
-            var result = _unitOfWork.Results.Get(r => (r.StudentId == student.Id) && (r.CourseId == student.CourseId)
+            var result = _unitOfWork.Results.GetResult(r => (r.StudentId == student.Id) && (r.CourseId == student.CourseId)
                                                   && (r.SemesterId == semester.Id));
 
             if (result is null)

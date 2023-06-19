@@ -68,10 +68,18 @@ namespace StudentsRM.Controllers
             return View(response.Data);
         }
         
-        // [Authorize(Roles = "Lecturer")]
+        [Authorize(Roles = "Lecturer")]
         public IActionResult GetLecturerStudents()
         {
             var response = _studentService.GetAllLecturerStudents();
+            ViewData["Message"] = response.Message;
+            ViewData["Status"] = response.Status;
+            return View(response.Data);
+        }
+
+        public IActionResult GetStudentsForResults()
+        {
+            var response = _studentService.GetAllLecturerStudentsForResults();
             ViewData["Message"] = response.Message;
             ViewData["Status"] = response.Status;
             return View(response.Data);

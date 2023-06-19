@@ -6,36 +6,12 @@
 <div class="body">
     <div class="row">
         <div class="col-md-6">
-            <form asp-action="Create">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th scope="col">Score</th>
-                        </tr>
-                    </thead>  
-                    <tbody>
-                        @foreach (var item in Model.Students)
-                        {                           
-                            <tr>
-                                <td>@item.FirstName</td>
-                                <td>
-                                    <div class="col-md-12 mb-2">
-                                        <label class="form-label">Score:</label>
-                                        <input type="text" class="form-control" placeholder="Enter Score" asp-for="Score">
-                                        <span asp-validation-for="Score" class="text-danger"></span>
-                                    </div>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                
-
-               
-                
-               
-
+            <form asp-action="Create">                
+                <div class="col-md-12 mb-2">
+                    <label class="form-label">Score:</label>
+                    <input type="text" class="form-control" placeholder="Enter Score for" asp-for="Score">
+                    <span asp-validation-for="Score" class="text-danger"></span>
+                </div>
                 <div class="col-md-12">
                     <button type="submit" class="btn btn-primary"> Add Result for student</button>
                 </div>

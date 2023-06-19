@@ -231,5 +231,42 @@ namespace StudentsRM.Service.Implementation
         {
             throw new NotImplementedException();
         }
+
+        public StudentsResponseModel GetAllLecturerStudentsForResults()
+        {
+            var response = new StudentsResponseModel();
+           
+            var userIdClaim = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
+            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
+            try
+            {
+                Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) 
+                                                     && (s.CourseId == lecturer.CourseId);
+                var students = _unitOfWork.Students.GetAllStudent(expression).Where(s => s.Results.Any() is false);
+
+                if (students is null)
+                {
+                    response.Message = "No student found on System";
+                    return response;
+                }
+
+                response.Data = students.Select(
+                    students => new StudentViewModel 
+                    {
+                        Id = students.Id,
+                        FullName =  $"{students.FirstName} {students.MiddleName} {students.LastName}",
+                        Course = students.Course.Name,
+                    }).ToList();
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"An error occurred {ex.Message}";
+                return response;
+            }
+            response.Status = true;
+            response.Message = "Success";
+            return response;
+        }   
     }
 }

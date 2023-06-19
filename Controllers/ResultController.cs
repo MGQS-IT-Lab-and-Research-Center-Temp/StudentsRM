@@ -20,6 +20,7 @@ namespace StudentsRM.Controllers
             _courseService = courseService;
             _notyf = notyf;
         }
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View();
@@ -52,9 +53,9 @@ namespace StudentsRM.Controllers
         }
          
         [HttpPost]
-        public IActionResult Create(AddResultViewModel request)
+        public IActionResult Create(AddResultViewModel request, string id)
         {
-            var response = _resultService.Create(request);
+            var response = _resultService.Create(request, id);
             if (response.Status == false)
             {
                 _notyf.Success(response.Message);
@@ -62,7 +63,7 @@ namespace StudentsRM.Controllers
             }
 
             _notyf.Success(response.Message);
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("GetLecturerStudents", "Student");
         }
 
         [Authorize(Roles = "Student")]

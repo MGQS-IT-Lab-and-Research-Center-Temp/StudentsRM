@@ -10,6 +10,7 @@ namespace StudentsRM.Service.Interface
         BaseResponseModel Delete(string studentId);
         StudentResponseModel GetStudent(string studentId);
         StudentsResponseModel GetAllLecturerStudents();
+        StudentsResponseModel GetAllLecturerStudentsForResults();
         StudentsResponseModel GetAll();
     }
 }

@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/StudentsRM.styles.css" asp-append-version="true" />
+    @* <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> *@
 </head>
 <body>
     <header>
@@ -56,7 +58,7 @@
                                    <a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="GetLecturerStudents">Get My Student</a>
                                 </li>
                                 <li class="nav-item">
-                                   <a class="nav-link text-dark" asp-area="" asp-controller="Result" asp-action="Create">Create Result</a>
+                                   <a class="nav-link text-dark" asp-area="" asp-controller="Student" asp-action="GetStudentsForResults">Create Result</a>
                                 </li>
                             }               
                         }

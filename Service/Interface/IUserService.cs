@@ -8,6 +8,6 @@ namespace StudentsRM.Service.Interface
     {
         UserResponseModel GetUser(string userId);
         UserResponseModel Login(LoginViewModel request);
-        BaseResponseModel UpdatePassword(string userId, UpdateUserViewModel update);
+        BaseResponseModel UpdatePassword(UpdateUserViewModel update);
     }
 }

@@ -18423,6 +18423,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "c:\\Users\\Ismail\\Desktop\\StudentsRM\\Views\\Student\\GetStudentsForResults.cshtml",
+      "TargetPath": "Views\\Student\\GetStudentsForResults.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\Users\\Ismail\\Desktop\\StudentsRM\\Views\\Lecturer\\GetLecturer.cshtml",
       "TargetPath": "Views\\Lecturer\\GetLecturer.cshtml",
       "FileKind": "mvc"

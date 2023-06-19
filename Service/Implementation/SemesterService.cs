@@ -18,8 +18,15 @@ namespace StudentsRM.Service.Implementation
         public BaseResponseModel Create(CreateSemesterViewModel request)
         {
             var response = new BaseResponseModel();
-            //var ifExist = _unitOfWork.Semesters.Exists(s => s.Id == request.)
+            var ifExist = _unitOfWork.Semesters.Exists(s => s.SemesterName == request.SemesterName);
+            var currentSemester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
 
+            currentSemester.CurrentSemester = false;
+            
+            if (ifExist)
+            {
+                response.Message = "Semester already exist ";
+            }
             var semester = new Semester
             {
                 SemesterName = request.SemesterName,
@@ -27,12 +34,12 @@ namespace StudentsRM.Service.Implementation
                 EndDate = request.EndDate,
                 CurrentSemester = true,
                 RegisteredBy = "Admin",
-                ModifiedBy = "",
             };
 
             try
             {
                 _unitOfWork.Semesters.Create(semester);
+                _unitOfWork.Semesters.Update(currentSemester);
                 _unitOfWork.SaveChanges();
                 response.Status = true;
                 response.Message = "Success";
@@ -93,16 +100,6 @@ namespace StudentsRM.Service.Implementation
         public BaseResponseModel Update(string semesterId, UpdateSemesterViewModel update)
         {
             throw new NotImplementedException();
-        }
-
-        public IEnumerable<SelectListItem> SelectSemester()
-        {
-            return _unitOfWork.Semesters.SelectAll().Select(sem => new SelectListItem()
-            {
-                Text = sem.SemesterName,
-                Value = sem.Id
-            }
-            );
         }
     }
 }
