@@ -239,11 +239,18 @@ namespace StudentsRM.Service.Implementation
             var userIdClaim = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
             var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
+            var semester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
+
+             Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) 
+                                                     && (s.CourseId == lecturer.CourseId)
+                                                     && !s.Results
+                .Any(r => r.StudentId == s.Id && r.SemesterId == semester.Id && r.CourseId == lecturer.CourseId);
+                
+            var students = _unitOfWork.Students.GetAllStudent(expression);
+            
+
             try
             {
-                Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) 
-                                                     && (s.CourseId == lecturer.CourseId);
-                var students = _unitOfWork.Students.GetAllStudent(expression);
 
                 if (students is null)
                 {
@@ -267,6 +274,6 @@ namespace StudentsRM.Service.Implementation
             response.Status = true;
             response.Message = "Success";
             return response;
-        }   
+        }
     }
 }

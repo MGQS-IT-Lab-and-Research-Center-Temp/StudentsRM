@@ -80,8 +80,13 @@ namespace StudentsRM.Controllers
         public IActionResult GetStudentsForResults()
         {
             var response = _studentService.GetAllLecturerStudentsForResults();
-            ViewData["Message"] = response.Message;
-            ViewData["Status"] = response.Status;
+            if (response.Status is false)
+            {
+                _notyf.Error(response.Message);
+                return View();
+            }
+
+            _notyf.Success(response.Message);
             return View(response.Data);
         }
     }

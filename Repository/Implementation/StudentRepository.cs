@@ -41,5 +41,14 @@ namespace StudentsRM.Repository.Implementation
 
             return students;
         }
+
+        public List<Student> GetAllStudentWithoutResult(string semesterId, string lecturerCourseId)
+        {
+            var students = _context.Students
+                .Where(s => !s.Results
+                .Any(r => r.StudentId == s.Id && r.SemesterId == semesterId && r.CourseId == lecturerCourseId))
+                .ToList();
+            return students;
+        }
     }
 }

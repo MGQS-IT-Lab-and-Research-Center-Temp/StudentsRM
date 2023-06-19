@@ -2,7 +2,6 @@ using AspNetCoreHero.ToastNotification.Abstractions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using StudentsRM.Models.Results;
-using StudentsRM.Models.Role;
 using StudentsRM.Service.Interface;
 
 namespace StudentsRM.Controllers
@@ -26,26 +25,7 @@ namespace StudentsRM.Controllers
             return View();
         }
 
-        // [Authorize(Roles = "Lecturer")]
-        // public IActionResult Create()
-        // {
-        //     return View();
-        // }
-         
-        // [HttpPost]
-        // public IActionResult Create(AddResultViewModel request, string studentId)
-        // {
-        //     var response = _resultService.Create(request, studentId);
-        //     if (response.Status == false)
-        //     {
-        //         _notyf.Success(response.Message);
-        //         return View();
-        //     }
-
-        //     _notyf.Success(response.Message);
-        //     return RedirectToAction("Index", "Home");
-        // }
-
+       
         [Authorize(Roles = "Lecturer")]
         public IActionResult Create()
         {
@@ -63,7 +43,7 @@ namespace StudentsRM.Controllers
             }
 
             _notyf.Success(response.Message);
-            return RedirectToAction("GetLecturerStudents", "Student");
+            return RedirectToAction("GetStudentsForResults", "Student");
         }
 
         [Authorize(Roles = "Student")]
@@ -80,3 +60,4 @@ namespace StudentsRM.Controllers
         }
     }
 }
+

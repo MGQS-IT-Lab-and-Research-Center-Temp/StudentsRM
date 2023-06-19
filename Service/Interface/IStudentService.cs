@@ -1,3 +1,4 @@
+using StudentsRM.Entities;
 using StudentsRM.Models;
 using StudentsRM.Models.Students;
 

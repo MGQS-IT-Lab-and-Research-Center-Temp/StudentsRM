@@ -8,5 +8,6 @@ namespace StudentsRM.Repository.Interface
         List<Course> GetStudentByCourseId(string courseId);
         Student GetStudentResult(Expression<Func<Student, bool>> expression);
         List<Student> GetAllStudent(Expression<Func<Student, bool>> expression);
+        List<Student> GetAllStudentWithoutResult(string semesterId, string lecturerCourseId);
     }
 }
