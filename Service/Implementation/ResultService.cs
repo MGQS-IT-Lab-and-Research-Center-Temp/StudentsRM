@@ -30,11 +30,11 @@ namespace StudentsRM.Service.Implementation
 
             var checkStudent =  student.Results.Where(r => (r.SemesterId == selectSemester.Id) && (r.StudentId == student.Id));
             
-            if (checkStudent  is not null)
-            {
-                response.Message = "Result already added";
-                return response;
-            }
+            // if (checkStudent  is not null)
+            // {
+            //     response.Message = "Result already added";
+            //     return response;
+            // }
 
             if (!lecturer.Course.Id.Equals(student.CourseId)) 
             {
