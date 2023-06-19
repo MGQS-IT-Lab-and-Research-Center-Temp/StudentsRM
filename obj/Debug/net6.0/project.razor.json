@@ -18493,6 +18493,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "c:\\Users\\Ismail\\Desktop\\StudentsRM\\Views\\Student\\Update.cshtml",
+      "TargetPath": "Views\\Student\\Update.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "c:\\Users\\Ismail\\Desktop\\StudentsRM\\Views\\Home\\Login.cshtml",
       "TargetPath": "Views\\Home\\Login.cshtml",
       "FileKind": "mvc"
@@ -18530,6 +18535,11 @@
     {
       "FilePath": "c:\\Users\\Ismail\\Desktop\\StudentsRM\\Views\\Student\\Index.cshtml",
       "TargetPath": "Views\\Student\\Index.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "c:\\Users\\Ismail\\Desktop\\StudentsRM\\Views\\Lecturer\\Update.cshtml",
+      "TargetPath": "Views\\Lecturer\\Update.cshtml",
       "FileKind": "mvc"
     }
   ],

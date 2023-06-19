@@ -11,10 +11,12 @@ namespace lecturersRM.Service.Implementation
     public class LecturerService : ILecturerService
     {
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LecturerService(IUnitOfWork unitOfWork)
+        public LecturerService(IUnitOfWork unitOfWork, IHttpContextAccessor httpContextAccessor)
         {
             _unitOfWork = unitOfWork;
+            _httpContextAccessor = httpContextAccessor;
         }
         public BaseResponseModel Create(CreateLecturerModel request, string roleName)
         {
@@ -63,7 +65,8 @@ namespace lecturersRM.Service.Implementation
                 PasswordHash = hashedPassword,
                 RoleId = role.Id,
                 RegisteredBy = "Admin",
-                LecturerStudentId = lecturer.Id
+                Lecturer = lecturer,
+                LecturerId = lecturer.Id
             };
 
             
@@ -178,7 +181,50 @@ namespace lecturersRM.Service.Implementation
 
         public BaseResponseModel Update(string lecturerId, UpdateLecturerViewModel update)
         {
-            throw new NotImplementedException();
+             var response = new BaseResponseModel();
+            var modifiedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var selectCourse = _unitOfWork.Courses.Get(update.CourseId);
+            
+            Expression<Func<Lecturer, bool>> expression = l =>
+                                                (l.Id == lecturerId)
+                                                && (l.Id == lecturerId
+                                                && l.IsDeleted == false);
+
+            var islecturerExist = _unitOfWork.Lecturers.Exists(expression);
+
+            if (!islecturerExist)
+            {
+                response.Message = "lecturer does not exist!";
+                return response;
+            }
+             
+            var lecturer = _unitOfWork.Lecturers.Get(lecturerId);
+            var user = _unitOfWork.Users.Get(x => x.LecturerId == lecturer.Id);
+
+            lecturer.Email = update.Email;
+            lecturer.Course = selectCourse;
+            lecturer.CourseId = selectCourse.Id;
+            lecturer.HomeAddress = update.HomeAddress;
+            lecturer.PhoneNumber = update.PhoneNumber;
+            lecturer.ModifiedBy = modifiedBy;
+
+            user.Email = lecturer.Email;
+
+            try
+            {
+                _unitOfWork.Lecturers.Update(lecturer);
+                _unitOfWork.Users.Update(user);
+                _unitOfWork.SaveChanges();
+                response.Message = "lecturer updated successfully.";
+                response.Status = true;
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"Could not update the lecturer: {ex.Message}";
+                return response;
+            }
         }
     }
 }

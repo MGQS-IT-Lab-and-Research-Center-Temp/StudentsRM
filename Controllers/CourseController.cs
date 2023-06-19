@@ -43,5 +43,21 @@ namespace StudentsRM.Controllers
             _notyf.Success(response.Message);
             return RedirectToAction("Index", "Course");
         }
+
+         [HttpPost]
+        public IActionResult Delete(string id)
+        {
+            var response = _courseService.Delete(id);
+
+            if (response.Status is false)
+            {
+                _notyf.Error(response.Message);
+                return RedirectToAction("Index", "Course");
+            }
+
+            _notyf.Success(response.Message);
+
+            return RedirectToAction("Index", "Course");
+        }
     }
 }

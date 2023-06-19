@@ -23,7 +23,7 @@ namespace StudentsRM.Service.Implementation
             var response = new BaseResponseModel();
             var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
-            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
+            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerId);
             var course = _unitOfWork.Courses.Get(lecturer.CourseId);
             var selectSemester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
             var student = _unitOfWork.Students.Get(studentId);
@@ -92,7 +92,7 @@ namespace StudentsRM.Service.Implementation
             var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var getStudent = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
             var semester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
-            var student = _unitOfWork.Students.Get(getStudent.LecturerStudentId);
+            var student = _unitOfWork.Students.Get(getStudent.StudentId);
             var result = _unitOfWork.Results.GetResult(r => (r.StudentId == student.Id) && (r.CourseId == student.CourseId)
                                                   && (r.SemesterId == semester.Id));
 

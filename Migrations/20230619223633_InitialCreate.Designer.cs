@@ -11,7 +11,7 @@ using StudentsRM.Context;
 namespace StudentsRM.Migrations
 {
     [DbContext(typeof(StudentsRMContext))]
-    [Migration("20230619080855_InitialCreate")]
+    [Migration("20230619223633_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -317,9 +317,8 @@ namespace StudentsRM.Migrations
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime(6)");
 
-                    b.Property<string>("LecturerStudentId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
+                    b.Property<string>("LecturerId")
+                        .HasColumnType("varchar(255)");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("longtext");
@@ -336,9 +335,16 @@ namespace StudentsRM.Migrations
                         .IsRequired()
                         .HasColumnType("varchar(255)");
 
+                    b.Property<string>("StudentId")
+                        .HasColumnType("varchar(255)");
+
                     b.HasKey("Id");
 
+                    b.HasIndex("LecturerId");
+
                     b.HasIndex("RoleId");
+
+                    b.HasIndex("StudentId");
 
                     b.ToTable("Users");
                 });
@@ -394,13 +400,25 @@ namespace StudentsRM.Migrations
 
             modelBuilder.Entity("StudentsRM.Entities.User", b =>
                 {
+                    b.HasOne("StudentsRM.Entities.Lecturer", "Lecturer")
+                        .WithMany()
+                        .HasForeignKey("LecturerId");
+
                     b.HasOne("StudentsRM.Entities.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("StudentsRM.Entities.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId");
+
+                    b.Navigation("Lecturer");
+
                     b.Navigation("Role");
+
+                    b.Navigation("Student");
                 });
 
             modelBuilder.Entity("StudentsRM.Entities.Course", b =>

@@ -6,7 +6,7 @@ using AspNetCoreHero.ToastNotification.Abstractions;
 
 namespace StudentsRM.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class StudentController : Controller
     {
         private readonly IStudentService _studentService;
@@ -20,12 +20,9 @@ namespace StudentsRM.Controllers
             _notyf = notyf;
         }
         
-        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var response = _studentService.GetAll();
-            // ViewData["Message"] = response.Message;
-            // ViewData["Status"] = response.Status;
             if (response.Status is false)
             {
                 _notyf.Error(response.Message);
@@ -36,7 +33,6 @@ namespace StudentsRM.Controllers
             return View(response.Data);
         }
 
-        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewBag.Courses = _courseService.SelectCourses();
@@ -76,7 +72,8 @@ namespace StudentsRM.Controllers
             ViewData["Status"] = response.Status;
             return View(response.Data);
         }
-
+        
+        [Authorize(Roles = "Lecturer")]
         public IActionResult GetStudentsForResults()
         {
             var response = _studentService.GetAllLecturerStudentsForResults();
@@ -88,6 +85,60 @@ namespace StudentsRM.Controllers
 
             _notyf.Success(response.Message);
             return View(response.Data);
+        }
+         
+        [HttpPost]
+        public IActionResult DeleteStudent(string id)
+        {
+            var response = _studentService.Delete(id);
+
+            if (response.Status is false)
+            {
+                _notyf.Error(response.Message);
+                return RedirectToAction("Index", "Student");
+            }
+
+            _notyf.Success(response.Message);
+
+            return RedirectToAction("Index", "Student");
+        }
+
+         public IActionResult Update(string id)
+        {
+            var response = _studentService.GetStudent(id);
+            ViewBag.Courses = _courseService.SelectCourses();
+
+            if (response.Status is false)
+            {
+                _notyf.Error(response.Message);
+                return RedirectToAction("Index", "Student");
+            }
+
+            var viewModel = new UpdateStudentViewModel
+            {
+                Id = response.Data.Id,
+                Email = response.Data.Email,
+                HomeAddress = response.Data.HomeAddress,
+                PhoneNumber = response.Data.PhoneNumber,
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public IActionResult Update(string id, UpdateStudentViewModel request)
+        {
+            var response = _studentService.Update(request, id);
+
+            if (response.Status is false)
+            {
+                _notyf.Error(response.Message);
+                return View(request);
+            }
+
+            _notyf.Success(response.Message);
+
+            return RedirectToAction("Index", "Student");
         }
     }
 }

@@ -48,6 +48,7 @@ namespace StudentsRM.Service.Implementation
             {
                 var user = _unitOfWork.Users.GetUser(x =>  
                 x.Email.ToLower() == request.Email.ToLower());
+                // && (x.Student.IsDeleted == false || x.Lecturer.IsDeleted == false))
 
                 if (user is null)
                 {

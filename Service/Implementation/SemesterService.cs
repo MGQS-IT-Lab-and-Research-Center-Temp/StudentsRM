@@ -61,7 +61,33 @@ namespace StudentsRM.Service.Implementation
 
         public BaseResponseModel Delete(string semesterId)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponseModel();
+            var ifExist = _unitOfWork.Semesters.Exists(c => c.Id == semesterId && !c.IsDeleted);
+
+            if (!ifExist)
+            {
+                response.Message = "Semester does not exist";
+                response.Status = true;
+                return response;
+            }
+
+            var semester = _unitOfWork.Semesters.Get(semesterId);
+            semester.IsDeleted = true;
+
+            try
+            {
+                _unitOfWork.Semesters.Update(semester);
+                _unitOfWork.SaveChanges();
+                response.Status = true;
+                response.Message = "Semester successfully deleted";
+
+                return response;
+            }
+            catch (System.Exception)
+            {
+                response.Message = "Failed to delete semester at this time";
+                return response;
+            }
         }
 
         public SemestersResponseModel GetAll()

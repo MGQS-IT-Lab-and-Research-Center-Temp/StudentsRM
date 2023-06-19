@@ -58,6 +58,8 @@ namespace StudentsRM.Controllers
              _notyf.Success(response.Message);   
             return View(response.Data);
         }
+
+        
     }
 }
 

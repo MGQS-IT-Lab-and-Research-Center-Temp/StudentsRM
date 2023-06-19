@@ -70,7 +70,8 @@ namespace StudentsRM.Service.Implementation
                 RoleId = role.Id,
                 RegisteredBy = "Admin",
                 ModifiedBy = "",
-                LecturerStudentId = student.Id
+                Student = student,
+                StudentId = student.Id
             };
             
             // var Courses = _unitOfWork.Courses.GetAllByIds(request.CourseIds);
@@ -107,7 +108,33 @@ namespace StudentsRM.Service.Implementation
 
         public BaseResponseModel Delete(string studentId)
         {
-            throw new NotImplementedException();
+            var response = new BaseResponseModel();
+            var ifExist = _unitOfWork.Students.Exists(s => s.Id == studentId && !s.IsDeleted);
+
+            if (!ifExist)
+            {
+                response.Message = "Student does not exist";
+                response.Status = true;
+                return response;
+            }
+            
+            var student = _unitOfWork.Students.Get(studentId);
+            student.IsDeleted = true;
+
+            try
+            {
+                _unitOfWork.Students.Update(student);
+                _unitOfWork.SaveChanges();
+                response.Status = true;
+                response.Message = "Student successfully deleted";
+
+                return response;
+            }
+            catch (System.Exception)
+            {
+                response.Message = "Failed to register Students at this time";
+                return response;
+            }
         }
 
         public StudentsResponseModel GetAll()
@@ -117,7 +144,6 @@ namespace StudentsRM.Service.Implementation
             {
                 Expression<Func<Student, bool>> expression = s => s.IsDeleted == false;
                 var students = _unitOfWork.Students.GetAllStudent(expression);
-                // var GetCourse = _unitOfWork.Students.GetStudentCourse()
 
                 if (students is null || students.Count == 0)
                 {
@@ -155,7 +181,7 @@ namespace StudentsRM.Service.Implementation
            
             var userIdClaim = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
-            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
+            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerId);
             try
             {
                 Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) && (s.CourseId == lecturer.CourseId);
@@ -229,7 +255,46 @@ namespace StudentsRM.Service.Implementation
 
         public BaseResponseModel Update(UpdateStudentViewModel update, string studentId)
         {
-            throw new NotImplementedException();
+              var response = new BaseResponseModel();
+            var modifiedBy = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var selectCourse = _unitOfWork.Courses.Get(update.CourseId);
+            
+            Expression<Func<Student, bool>> expression = s =>
+                                                (s.Id == studentId)
+                                                && (s.Id == studentId
+                                                && s.IsDeleted == false);
+
+            var islecturerExist = _unitOfWork.Students.Exists(expression);
+
+            if (!islecturerExist)
+            {
+                response.Message = "student does not exist!";
+                return response;
+            }
+
+            var student = _unitOfWork.Students.Get(studentId);
+
+            student.Email = update.Email;
+            student.Course = selectCourse;
+            student.CourseId = selectCourse.Id;
+            student.HomeAddress = update.HomeAddress;
+            student.PhoneNumber = update.PhoneNumber;
+            student.ModifiedBy = modifiedBy;
+
+            try
+            {
+                _unitOfWork.Students.Update(student);
+                _unitOfWork.SaveChanges();
+                response.Message = "student updated successfully.";
+                response.Status = true;
+
+                return response;
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"Could not update the student: {ex.Message}";
+                return response;
+            }
         }
 
         public StudentsResponseModel GetAllLecturerStudentsForResults()
@@ -238,7 +303,7 @@ namespace StudentsRM.Service.Implementation
            
             var userIdClaim = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
-            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerStudentId);
+            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.StudentId);
             var semester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
 
              Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) 

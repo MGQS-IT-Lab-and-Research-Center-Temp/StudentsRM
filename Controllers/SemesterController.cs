@@ -46,10 +46,21 @@ namespace StudentsRM.Controllers
             return RedirectToAction("Index", "Semester"); ;
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        
+        [HttpPost]
+        public IActionResult DeleteSemester(string id)
         {
-            return View("Error!");
+            var response = _semesterService.Delete(id);
+
+            if (response.Status is false)
+            {
+                _notyf.Error(response.Message);
+                return RedirectToAction("Index", "Semester");
+            }
+
+            _notyf.Success(response.Message);
+
+            return RedirectToAction("Index", "Semester");
         }
     }
 }

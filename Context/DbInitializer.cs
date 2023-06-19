@@ -75,7 +75,6 @@ namespace StudentsRM.Context
                     IsDeleted = false,
                     ModifiedBy = "",
                     LastModified = new DateTime(),
-                    LecturerStudentId = ""
                 }
             };
 
