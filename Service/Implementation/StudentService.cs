@@ -243,7 +243,7 @@ namespace StudentsRM.Service.Implementation
             {
                 Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) 
                                                      && (s.CourseId == lecturer.CourseId);
-                var students = _unitOfWork.Students.GetAllStudent(expression).Where(s => s.Results.Any() is false);
+                var students = _unitOfWork.Students.GetAllStudent(expression);
 
                 if (students is null)
                 {
