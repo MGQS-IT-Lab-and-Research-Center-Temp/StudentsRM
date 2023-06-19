@@ -23,7 +23,7 @@ namespace lecturersRM.Service.Implementation
             string saltString = HashingHelper.GenerateSalt();
             string hashedPassword = HashingHelper.HashPassword(defaultPassword, saltString);
 
-            var ifExist = _unitOfWork.Lecturers.Exists(l => (l.Email == request.Email));
+            var ifExist = _unitOfWork.Lecturers.Exists(l => (l.Email == request.Email) && (l.PhoneNumber == request.PhoneNumber));
             if (ifExist)
             {
                 response.Message = "Email already in use";

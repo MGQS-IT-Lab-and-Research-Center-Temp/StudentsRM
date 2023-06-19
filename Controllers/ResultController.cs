@@ -58,7 +58,7 @@ namespace StudentsRM.Controllers
             var response = _resultService.Create(request, id);
             if (response.Status == false)
             {
-                _notyf.Success(response.Message);
+                _notyf.Error(response.Message);
                 return View();
             }
 

@@ -28,6 +28,13 @@ namespace StudentsRM.Service.Implementation
             var selectSemester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
             var student = _unitOfWork.Students.Get(studentId);
 
+            var checkStudent =  student.Results.Where(r => (r.SemesterId == selectSemester.Id) && (r.StudentId == student.Id));
+            
+            if (checkStudent  is not null)
+            {
+                response.Message = "Result already added";
+                return response;
+            }
 
             if (!lecturer.Course.Id.Equals(student.CourseId)) 
             {

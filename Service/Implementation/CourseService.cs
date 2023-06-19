@@ -30,7 +30,6 @@ namespace StudentsRM.Service.Implementation
             {
                 Name = request.Name,
                 RegisteredBy = "Admin",
-                ModifiedBy = "",
                 DateCreated = DateTime.Today
             };
 

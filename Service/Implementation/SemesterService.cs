@@ -20,12 +20,18 @@ namespace StudentsRM.Service.Implementation
             var response = new BaseResponseModel();
             var ifExist = _unitOfWork.Semesters.Exists(s => s.SemesterName == request.SemesterName);
             var currentSemester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
-
+            var currentDate = DateTime.Now;
+            if (currentDate >= currentSemester.StartDate && currentDate <= currentSemester.EndDate)
+            {
+                response.Message = "Current Semester is still on";
+                return response;
+            }
             currentSemester.CurrentSemester = false;
             
             if (ifExist)
             {
                 response.Message = "Semester already exist ";
+                return response;
             }
             var semester = new Semester
             {
