@@ -273,6 +273,7 @@ namespace StudentsRM.Service.Implementation
             }
 
             var student = _unitOfWork.Students.Get(studentId);
+            var user = _unitOfWork.Users.Get(x => x.StudentId == student.Id);
 
             student.Email = update.Email;
             student.Course = selectCourse;
@@ -281,9 +282,12 @@ namespace StudentsRM.Service.Implementation
             student.PhoneNumber = update.PhoneNumber;
             student.ModifiedBy = modifiedBy;
 
+            user.Email = update.Email;
+
             try
             {
                 _unitOfWork.Students.Update(student);
+                _unitOfWork.Users.Update(user);
                 _unitOfWork.SaveChanges();
                 response.Message = "student updated successfully.";
                 response.Status = true;

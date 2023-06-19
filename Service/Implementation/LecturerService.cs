@@ -190,9 +190,9 @@ namespace lecturersRM.Service.Implementation
                                                 && (l.Id == lecturerId
                                                 && l.IsDeleted == false);
 
-            var islecturerExist = _unitOfWork.Lecturers.Exists(expression);
+            var iflecturerExist = _unitOfWork.Lecturers.Exists(expression);
 
-            if (!islecturerExist)
+            if (!iflecturerExist)
             {
                 response.Message = "lecturer does not exist!";
                 return response;
