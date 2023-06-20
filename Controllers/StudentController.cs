@@ -6,7 +6,7 @@ using AspNetCoreHero.ToastNotification.Abstractions;
 
 namespace StudentsRM.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    
     public class StudentController : Controller
     {
         private readonly IStudentService _studentService;
@@ -19,7 +19,7 @@ namespace StudentsRM.Controllers
             _courseService = courseService;
             _notyf = notyf;
         }
-        
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             var response = _studentService.GetAll();
@@ -32,7 +32,8 @@ namespace StudentsRM.Controllers
             _notyf.Success(response.Message);
             return View(response.Data);
         }
-
+        
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             ViewBag.Courses = _courseService.SelectCourses();
@@ -55,7 +56,8 @@ namespace StudentsRM.Controllers
             _notyf.Success(response.Message);
             return RedirectToAction("Index");
         }
-
+        
+        [Authorize(Roles = "Admin")]
         public IActionResult GetStudent(string id)
         {
             var response = _studentService.GetStudent(id);
@@ -68,8 +70,13 @@ namespace StudentsRM.Controllers
         public IActionResult GetLecturerStudents()
         {
             var response = _studentService.GetAllLecturerStudents();
-            ViewData["Message"] = response.Message;
-            ViewData["Status"] = response.Status;
+           if (response.Status is false)
+            {
+                _notyf.Error(response.Message);
+                return View();
+            }
+
+            _notyf.Success(response.Message);
             return View(response.Data);
         }
         
@@ -87,6 +94,7 @@ namespace StudentsRM.Controllers
             return View(response.Data);
         }
          
+         [Authorize(Roles = "Admin")]
         [HttpPost]
         public IActionResult DeleteStudent(string id)
         {
@@ -102,7 +110,8 @@ namespace StudentsRM.Controllers
 
             return RedirectToAction("Index", "Student");
         }
-
+         
+         [Authorize(Roles = "Admin")]
          public IActionResult Update(string id)
         {
             var response = _studentService.GetStudent(id);

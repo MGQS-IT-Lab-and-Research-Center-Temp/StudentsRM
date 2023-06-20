@@ -171,7 +171,7 @@ namespace StudentsRM.Service.Implementation
         
         public IEnumerable<SelectListItem> SelectCourses()
         {
-            return _unitOfWork.Courses.SelectAll().Select(cou => new SelectListItem()
+            return _unitOfWork.Courses.SelectAll(c => c.IsDeleted == false).Select(cou => new SelectListItem()
             {
                 Text = cou.Name,
                 Value = cou.Id

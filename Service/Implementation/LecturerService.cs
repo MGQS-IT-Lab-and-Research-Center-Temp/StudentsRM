@@ -33,12 +33,6 @@ namespace lecturersRM.Service.Implementation
     
             var selectCourse = _unitOfWork.Courses.Get(request.CourseId);
 
-            if (selectCourse.Lecturer is not null || selectCourse.Lecturer.Where(l => l.IsDeleted == false).ToList().Count != 0)
-            {
-                response.Message = "A Lecturer had neen registered for this course";
-                return response;
-            }
-
             var lecturer = new Lecturer
             {
                 FirstName = request.FirstName,
@@ -54,11 +48,10 @@ namespace lecturersRM.Service.Implementation
                 CourseId = selectCourse.Id
             };
 
-            selectCourse.Lecturer.Add(lecturer);
 
             roleName ??= "Lecturer";
 
-            var role = _unitOfWork.Roles.Get(x => x.RoleName == roleName);
+            var role = _unitOfWork.Roles.Get(x => x.RoleName == roleName &&  x.IsDeleted == false);
 
             if (role is null)
             {

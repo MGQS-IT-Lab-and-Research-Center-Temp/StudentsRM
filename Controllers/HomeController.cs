@@ -70,10 +70,10 @@ public class HomeController : Controller
         //     return RedirectToAction("AdminDashboard", "Home");
         // }
 
-        if (user.RoleName == "Student")
-        {
-            return RedirectToAction("GetStudent", "Student", response.Data.CheckUserId);
-        }
+        // if (user.RoleName == "Student")
+        // {
+        //     return RedirectToAction("GetStudent", "Student", response.Data.CheckUserId);
+        // }
 
         return RedirectToAction("Index", "Home");
     }

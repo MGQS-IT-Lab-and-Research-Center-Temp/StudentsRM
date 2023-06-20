@@ -28,10 +28,10 @@ namespace StudentsRM.Service.Implementation
             var createdBy = _httpContextAccessor.HttpContext.User.Identity.Name;
             var selectCourse = _unitOfWork.Courses.Get(request.CourseId);
 
-            var ifExist = _unitOfWork.Lecturers.Exists(s => (s.Email == request.Email) && (s.IsDeleted == false));
+            var ifExist = _unitOfWork.Lecturers.Exists(s => (s.Email == request.Email) &&(s.PhoneNumber == request.PhoneNumber) && (s.IsDeleted == false));
             if (ifExist)
             {
-                response.Message = "Email already in use";
+                response.Message = "Email or Phone number already in use";
                 return response;
             }
             
@@ -307,21 +307,19 @@ namespace StudentsRM.Service.Implementation
            
             var userIdClaim = _httpContextAccessor.HttpContext?.User?.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
             var getLecturer = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
-            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.StudentId);
+            var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerId);
             var semester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
-
-             Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) 
-                                                     && (s.CourseId == lecturer.CourseId)
-                                                     && !s.Results
-                .Any(r => r.StudentId == s.Id && r.SemesterId == semester.Id && r.CourseId == lecturer.CourseId);
-                
-            var students = _unitOfWork.Students.GetAllStudent(expression);
             
 
             try
             {
-
-                if (students is null)
+                  Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) 
+                                                     && (s.CourseId == lecturer.CourseId)
+                                                     && !s.Results
+                .Any(r => r.StudentId == s.Id && r.SemesterId == semester.Id && r.CourseId == lecturer.CourseId);
+                
+                var students = _unitOfWork.Students.GetAllStudent(expression);
+               if (students is null)
                 {
                     response.Message = "No student found on System";
                     return response;
