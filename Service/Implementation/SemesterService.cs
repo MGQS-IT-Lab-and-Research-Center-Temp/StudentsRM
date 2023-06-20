@@ -18,15 +18,22 @@ namespace StudentsRM.Service.Implementation
         public BaseResponseModel Create(CreateSemesterViewModel request)
         {
             var response = new BaseResponseModel();
-            var ifExist = _unitOfWork.Semesters.Exists(s => s.SemesterName == request.SemesterName);
+            var ifExist = _unitOfWork.Semesters.Exists(s => s.SemesterName == request.SemesterName && s.IsDeleted == false);
             var currentSemester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
             var currentDate = DateTime.Now;
-            if (currentDate >= currentSemester.StartDate && currentDate <= currentSemester.EndDate)
+            
+            if (currentSemester != null && currentDate >= currentSemester.StartDate && currentDate <= currentSemester.EndDate)
             {
                 response.Message = "Current Semester is still on";
                 return response;
             }
-            currentSemester.CurrentSemester = false;
+            
+            if (currentSemester != null && !(currentDate >= currentSemester.StartDate && currentDate <= currentSemester.EndDate))
+            {
+                currentSemester.CurrentSemester = false;
+                _unitOfWork.Semesters.Update(currentSemester);
+            }
+            
             
             if (ifExist)
             {
@@ -45,7 +52,6 @@ namespace StudentsRM.Service.Implementation
             try
             {
                 _unitOfWork.Semesters.Create(semester);
-                _unitOfWork.Semesters.Update(currentSemester);
                 _unitOfWork.SaveChanges();
                 response.Status = true;
                 response.Message = "Success";

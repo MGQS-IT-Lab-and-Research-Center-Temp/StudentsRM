@@ -25,13 +25,19 @@ namespace lecturersRM.Service.Implementation
             string saltString = HashingHelper.GenerateSalt();
             string hashedPassword = HashingHelper.HashPassword(defaultPassword, saltString);
 
-            var ifExist = _unitOfWork.Lecturers.Exists(l => (l.Email == request.Email) && (l.PhoneNumber == request.PhoneNumber));
+            var ifExist = _unitOfWork.Lecturers.Exists(l => (l.Email == request.Email) && (l.PhoneNumber == request.PhoneNumber) && (l.IsDeleted == false));
             if (ifExist)
             {
                 response.Message = "Email already in use";
             }
-
+    
             var selectCourse = _unitOfWork.Courses.Get(request.CourseId);
+
+            if (selectCourse.Lecturer is not null || selectCourse.Lecturer.Where(l => l.IsDeleted == false).ToList().Count != 0)
+            {
+                response.Message = "A Lecturer had neen registered for this course";
+                return response;
+            }
 
             var lecturer = new Lecturer
             {
@@ -47,6 +53,8 @@ namespace lecturersRM.Service.Implementation
                 Course = selectCourse,
                 CourseId = selectCourse.Id
             };
+
+            selectCourse.Lecturer.Add(lecturer);
 
             roleName ??= "Lecturer";
 
@@ -209,6 +217,7 @@ namespace lecturersRM.Service.Implementation
             lecturer.ModifiedBy = modifiedBy;
 
             user.Email = lecturer.Email;
+            user.ModifiedBy = modifiedBy;
 
             try
             {

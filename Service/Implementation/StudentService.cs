@@ -28,7 +28,7 @@ namespace StudentsRM.Service.Implementation
             var createdBy = _httpContextAccessor.HttpContext.User.Identity.Name;
             var selectCourse = _unitOfWork.Courses.Get(request.CourseId);
 
-            var ifExist = _unitOfWork.Lecturers.Exists(s => (s.Email == request.Email));
+            var ifExist = _unitOfWork.Lecturers.Exists(s => (s.Email == request.Email) && (s.IsDeleted == false));
             if (ifExist)
             {
                 response.Message = "Email already in use";
@@ -283,7 +283,7 @@ namespace StudentsRM.Service.Implementation
             student.ModifiedBy = modifiedBy;
 
             user.Email = update.Email;
-
+            user.ModifiedBy = modifiedBy;
             try
             {
                 _unitOfWork.Students.Update(student);

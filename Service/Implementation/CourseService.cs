@@ -18,7 +18,7 @@ namespace StudentsRM.Service.Implementation
         public BaseResponseModel Create(CreateCourseModel request)
         {
             var response = new BaseResponseModel();
-            var ifExist = _unitOfWork.Courses.Exists(c => c.Name == request.Name);
+            var ifExist = _unitOfWork.Courses.Exists(c => c.Name == request.Name && c.IsDeleted == false);
 
             if (ifExist)
             {
