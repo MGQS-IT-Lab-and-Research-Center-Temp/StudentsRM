@@ -111,6 +111,8 @@ namespace StudentsRM.Service.Implementation
             var response = new BaseResponseModel();
             var ifExist = _unitOfWork.Students.Exists(s => s.Id == studentId && !s.IsDeleted);
 
+            
+
             if (!ifExist)
             {
                 response.Message = "Student does not exist";
@@ -321,7 +323,7 @@ namespace StudentsRM.Service.Implementation
                 var students = _unitOfWork.Students.GetAllStudent(expression);
                if (students is null)
                 {
-                    response.Message = "No student found on System";
+                    response.Message = "All student result have been updated";
                     return response;
                 }
 

@@ -98,7 +98,7 @@ namespace StudentsRM.Service.Implementation
 
             if (result is null)
             {
-                response.Message = "Result is not availlable currently";
+                response.Message = "Result for this semesteris not availlable currently";
                 return response;
             }
             

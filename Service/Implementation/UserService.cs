@@ -21,7 +21,7 @@ namespace StudentsRM.Service.Implementation
         public UserResponseModel GetUser(string userId)
         {
             var response = new UserResponseModel();
-            var user = _unitOfWork.Users.GetUser(x => x.Id == userId);
+            var user = _unitOfWork.Users.GetUser(x => x.Id == userId && (x.Lecturer.IsDeleted == false || x.Student.IsDeleted == false));
 
             if (user is null)
             {

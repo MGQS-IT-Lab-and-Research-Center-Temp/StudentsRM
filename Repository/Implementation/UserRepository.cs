@@ -17,6 +17,8 @@ namespace StudentsRM.Repository.Implementation
         {
             return _context.Users
                 .Include(x => x.Role)
+                .Include(x => x.Lecturer)
+                .Include(x => x.Student)
                 .SingleOrDefault(expression);
         }
     }

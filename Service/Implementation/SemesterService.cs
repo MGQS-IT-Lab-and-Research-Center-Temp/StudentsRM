@@ -27,8 +27,9 @@ namespace StudentsRM.Service.Implementation
                 response.Message = "Current Semester is still on";
                 return response;
             }
-            
-            if (currentSemester != null && !(currentDate >= currentSemester.StartDate && currentDate <= currentSemester.EndDate))
+           
+
+            if (currentSemester != null  && !(currentDate >= currentSemester.StartDate && currentDate <= currentSemester.EndDate))
             {
                 currentSemester.CurrentSemester = false;
                 _unitOfWork.Semesters.Update(currentSemester);
@@ -113,6 +114,7 @@ namespace StudentsRM.Service.Implementation
                 response.Data = semesters.Select(
                     s => new SemesterViewModel
                     {
+                        Id = s.Id,
                         SemesterName = s.SemesterName,
                         StartDate = s.StartDate,
                         EndDate = s.EndDate
