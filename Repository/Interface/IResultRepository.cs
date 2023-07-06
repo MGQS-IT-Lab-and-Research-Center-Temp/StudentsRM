@@ -6,5 +6,6 @@ namespace StudentsRM.Repository.Interface
     public interface IResultRepository : IRepository<Result>
     {
         Result GetResult(Expression<Func<Result, bool>> expression);
+        List<Result> GetAllResult(Expression<Func<Result, bool>> expression);
     }
 }

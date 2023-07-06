@@ -80,6 +80,7 @@ namespace StudentsRM.Service.Implementation
 
             var semester = _unitOfWork.Semesters.Get(semesterId);
             semester.IsDeleted = true;
+            // semester.CurrentSemester = false;
 
             try
             {

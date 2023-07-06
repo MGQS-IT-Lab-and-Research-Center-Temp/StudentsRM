@@ -59,7 +59,18 @@ namespace StudentsRM.Controllers
             return View(response.Data);
         }
 
-        
+        [Authorize(Roles = "Student")]
+        public IActionResult CheckAllResult()
+        {
+            var response = _resultService.GetAll();
+            if(response.Status == false)
+            {
+                _notyf.Error(response.Message);
+                return View();
+            }
+             _notyf.Success(response.Message);   
+            return View(response.Data);
+        }
     }
 }
 

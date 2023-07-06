@@ -23,5 +23,17 @@ namespace StudentsRM.Repository.Implementation
 
             return result;
         }
+
+        public List<Result> GetAllResult(Expression<Func<Result, bool>> expression)
+        {
+            var result = _context.Results
+                .Where(expression)
+                .Include(s => s.Course)
+                .Include(s => s.Semester)
+                .Include(s => s.Student)
+                .ToList();
+
+            return result;
+        }
     }
 }

@@ -317,8 +317,8 @@ namespace StudentsRM.Service.Implementation
             {
                   Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) 
                                                      && (s.CourseId == lecturer.CourseId)
-                                                     && !s.Results
-                .Any(r => r.StudentId == s.Id && r.SemesterId == semester.Id && r.CourseId == lecturer.CourseId);
+                                                     && !(s.Results
+                .Any(r => r.StudentId == s.Id && r.SemesterId == semester.Id && r.CourseId == lecturer.CourseId));
                 
                 var students = _unitOfWork.Students.GetAllStudent(expression);
                if (students is null)

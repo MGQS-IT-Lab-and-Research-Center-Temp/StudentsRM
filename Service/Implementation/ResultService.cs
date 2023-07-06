@@ -83,7 +83,41 @@ namespace StudentsRM.Service.Implementation
 
         public ResultsResponseModel GetAll()
         {
-            throw new NotImplementedException();
+            var response = new ResultsResponseModel();
+            var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+            var getStudent = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
+            var student = _unitOfWork.Students.Get(getStudent.StudentId);
+            var result = _unitOfWork.Results.GetAllResult(r => (r.StudentId == student.Id) && (r.CourseId == student.CourseId));
+
+            if (result is null)
+            {
+                response.Message = "Result is not availlable currently";
+                return response;
+            }
+            
+            try
+            {
+                response.Data = result.Select(
+                    result => new ResultViewModel
+                {
+                    Id = result.Id,
+                    StudentId = result.StudentId,
+                    SemesterId = result.SemesterId,
+                    CourseId = result.CourseId,
+                    SemesterName = result.Semester.SemesterName,
+                    StudentName = $"{result.Student.FirstName} {result.Student.MiddleName} {result.Student.LastName}",
+                    CourseName = result.Course.Name,
+                    Score = result.Score 
+                }).ToList();
+                response.Status = true;
+                response.Message = "Succcess";
+            }
+            catch (Exception ex)
+            {
+                response.Message = $"An error occured{ex.Message}";
+                return response;
+            }         
+            return response;
         }
 
         public ResultResponseModel CheckStudentResult()
@@ -98,7 +132,7 @@ namespace StudentsRM.Service.Implementation
 
             if (result is null)
             {
-                response.Message = "Result for this semesteris not availlable currently";
+                response.Message = "Result for this semester is not availlable currently";
                 return response;
             }
             
@@ -111,7 +145,7 @@ namespace StudentsRM.Service.Implementation
                     SemesterId = result.SemesterId,
                     CourseId = result.CourseId,
                     SemesterName = result.Semester.SemesterName,
-                    StudentName = result.Student.FirstName,
+                    StudentName = $"{result.Student.FirstName} {result.Student.MiddleName} {result.Student.LastName}",
                     CourseName = result.Course.Name,
                     Score = result.Score 
                 };

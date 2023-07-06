@@ -23,13 +23,9 @@ namespace StudentsRM.Controllers
         public IActionResult Index()
         {
             var response = _studentService.GetAll();
-            if (response.Status is false)
-            {
-                _notyf.Error(response.Message);
-                return View();
-            }
+            ViewData["Message"] = response.Message;
+            ViewData["Status"] = response.Status;
 
-            _notyf.Success(response.Message);
             return View(response.Data);
         }
         

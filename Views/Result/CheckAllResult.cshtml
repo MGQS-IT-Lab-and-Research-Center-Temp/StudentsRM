@@ -1,0 +1,29 @@
+@model List<StudentsRM.Models.Results.ResultViewModel>
+@{
+    ViewData["Title"] = "My Result";
+}
+
+<h3 class="card-title">
+    @ViewData["Title"]
+</h3>
+
+<div class="card-body">
+
+    @if (Model is not null)
+    {
+        foreach (var item in Model)
+        {
+            <dl class="row">
+                <dt class="col-sm-4">Name</dt>
+                <dd class="col-sm-8">@item.StudentName</dd>
+                <dt class="col-sm-4">Course</dt>
+                <dd class="col-sm-8">@item.CourseName</dd>
+                <dt class="col-sm-4">Semester</dt>
+                <dd class="col-sm-8">@item.SemesterName</dd>
+                <dt class="col-sm-4">Score</dt>
+                <dd class="col-sm-8">@item.Score</dd>
+           </dl>
+        }
+    }
+    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Home</a>
+</div>
