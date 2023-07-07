@@ -189,7 +189,7 @@ namespace StudentsRM.Service.Implementation
                 Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) && (s.CourseId == lecturer.CourseId);
                 var students = _unitOfWork.Students.GetAllStudent(expression);
 
-                if (students is null)
+                if (students is null || students.Count == 0)
                 {
                     response.Message = "No student found on System";
                     return response;
@@ -321,9 +321,9 @@ namespace StudentsRM.Service.Implementation
                 .Any(r => r.StudentId == s.Id && r.SemesterId == semester.Id && r.CourseId == lecturer.CourseId));
                 
                 var students = _unitOfWork.Students.GetAllStudent(expression);
-               if (students is null)
+               if (students is null || students.Count == 0)
                 {
-                    response.Message = "All student result have been updated";
+                    response.Message = "All Students result have been updated";
                     return response;
                 }
 
