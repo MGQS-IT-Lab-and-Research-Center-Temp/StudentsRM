@@ -31,7 +31,12 @@ namespace StudentsRM.Service.Implementation
             var checkStudent =  _unitOfWork.Results
                 .Exists(r => r.SemesterId == selectSemester.Id && r.StudentId == student.Id && r.CourseId == course.Id);
             
-            if (checkStudent )
+            if (selectSemester == null)
+            {
+                response.Message = "No semester is currently set on system. Please try again later";
+                return response;
+            }
+            if (checkStudent)
             {
                 response.Message = "Result already added";
                 return response;
@@ -39,7 +44,7 @@ namespace StudentsRM.Service.Implementation
 
             if (!lecturer.Course.Id.Equals(student.CourseId)) 
             {
-                response.Message = "An error occurred";
+                response.Message = "Not Authorized to add Result";
                 return response;
             }
             
@@ -123,21 +128,26 @@ namespace StudentsRM.Service.Implementation
         public ResultResponseModel CheckStudentResult()
         {
             var response = new ResultResponseModel();
-            var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
-            var getStudent = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
-            var semester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
-            var student = _unitOfWork.Students.Get(getStudent.StudentId);
-            var result = _unitOfWork.Results.GetResult(r => (r.StudentId == student.Id) && (r.CourseId == student.CourseId)
-                                                  && (r.SemesterId == semester.Id));
-
-            if (result is null)
-            {
-                response.Message = "Result for this semester is not availlable currently";
-                return response;
-            }
             
             try
             {
+                var userIdClaim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+                var getStudent = _unitOfWork.Users.Get(u => u.Id == userIdClaim);
+                var semester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
+                var student = _unitOfWork.Students.Get(getStudent.StudentId);
+                var result = _unitOfWork.Results.GetResult(r => (r.StudentId == student.Id) && (r.CourseId == student.CourseId)
+                                                    && (r.SemesterId == semester.Id));
+
+                if (semester is null)
+                {
+                    response.Message = "Result not available currently";
+                    return response;
+                }
+                if (result is null)
+                {
+                    response.Message = "Result for this semester is not availlable currently";
+                    return response;
+                }
                 response.Data = new ResultViewModel
                 {
                     Id = result.Id,

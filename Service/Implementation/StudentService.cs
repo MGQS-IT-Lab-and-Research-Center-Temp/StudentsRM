@@ -164,7 +164,8 @@ namespace StudentsRM.Service.Implementation
                         Course = students.Course.Name,
                         DateAdmitted = students.DateAdmitted,
                         Gender = students.Gender,
-                        Email = students.Email
+                        Email = students.Email,
+                        HomeAddress = students.HomeAddress
                     }).ToList();
             }
             catch (Exception ex)
@@ -312,7 +313,11 @@ namespace StudentsRM.Service.Implementation
             var lecturer = _unitOfWork.Lecturers.Get(getLecturer.LecturerId);
             var semester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true);
             
-
+            if (semester is null)
+            {
+                response.Message = "Current semester is not yet created. Please try again later or contact the school administration.";
+                return response;
+            }
             try
             {
                   Expression<Func<Student, bool>> expression = s => (s.IsDeleted == false) 

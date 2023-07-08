@@ -61,7 +61,7 @@ namespace StudentsRM.Service.Implementation
             }
             catch (System.Exception)
             {
-                response.Message = "System Error";
+                response.Message = "System Error. Please try again later";
                 return response;
             }
         }
@@ -80,7 +80,7 @@ namespace StudentsRM.Service.Implementation
 
             var semester = _unitOfWork.Semesters.Get(semesterId);
             semester.IsDeleted = true;
-            // semester.CurrentSemester = false;
+            semester.CurrentSemester = false;
 
             try
             {
