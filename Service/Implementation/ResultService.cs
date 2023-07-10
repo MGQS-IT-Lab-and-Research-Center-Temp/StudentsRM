@@ -36,6 +36,13 @@ namespace StudentsRM.Service.Implementation
                 response.Message = "No semester is currently set on system. Please try again later";
                 return response;
             }
+            
+            if (lecturer.IsDeleted == true)
+            {
+                response.Message = "Not authorized currently";
+                return response;
+            }
+            
             if (checkStudent)
             {
                 response.Message = "Result already added";

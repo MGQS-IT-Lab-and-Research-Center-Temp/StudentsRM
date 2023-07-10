@@ -196,6 +196,12 @@ namespace StudentsRM.Service.Implementation
                     return response;
                 }
 
+                if (lecturer.IsDeleted == true)
+                {
+                    response.Message = "Not Authorized to view student currently. Kindly contact the management";
+                    return response;
+                }
+
                 response.Data = students.Select(
                     students => new StudentViewModel 
                     {
@@ -316,6 +322,11 @@ namespace StudentsRM.Service.Implementation
             if (semester is null)
             {
                 response.Message = "Current semester is not yet created. Please try again later or contact the school administration.";
+                return response;
+            }
+            if (lecturer.IsDeleted == true)
+            {
+                response.Message = "Not Authorized to add results currently.";
                 return response;
             }
             try
