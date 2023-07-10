@@ -1,5 +1,6 @@
 using StudentsRM.Models;
 using StudentsRM.Models.Auth;
+using StudentsRM.Models.Home;
 using StudentsRM.Models.User;
 
 namespace StudentsRM.Service.Interface
@@ -9,5 +10,6 @@ namespace StudentsRM.Service.Interface
         UserResponseModel GetUser(string userId);
         UserResponseModel Login(LoginViewModel request);
         BaseResponseModel UpdatePassword(UpdateUserViewModel update);
+        HomeResponseModel AdminDashBoard();
     }
 }

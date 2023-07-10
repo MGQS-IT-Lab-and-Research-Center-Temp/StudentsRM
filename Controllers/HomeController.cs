@@ -65,10 +65,10 @@ public class HomeController : Controller
 
         _notyf.Success(response.Message);
 
-        // if (user.RoleName == "Admin")
-        // {
-        //     return RedirectToAction("AdminDashboard", "Home");
-        // }
+        if (user.RoleName == "Admin")
+        {
+            return RedirectToAction("AdminDashboard", "Home");
+        }
 
         // if (user.RoleName == "Student")
         // {
@@ -91,9 +91,12 @@ public class HomeController : Controller
     }
     
     [Authorize(Roles = "Admin")]
-    public IActionResult AdminDashboard()
+    public IActionResult AdminDashBoard()
     {
-        return View();
+        var response = _userService.AdminDashBoard();
+        ViewData["Message"] = response.Message;
+        ViewData["Status"] = response.Status;
+        return View(response.Data);
     }
 
     public IActionResult UpdatePassword()

@@ -1,0 +1,46 @@
+@model StudentsRM.Models.Home.AdminViewModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<div class="container mt-4">
+  <h3>Welcome, Admin!</h3>
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Total Students</h5>
+          <p class="card-text">@Model.TotalStudent</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Total Lecturer</h5>
+          <p class="card-text">@Model.TotalLecturers</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Total Courses</h5>
+          <p class="card-text">@Model.TotalCourses</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="col-md-4">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Current Semester</h5>
+          <p class="card-text">@Model.CurrentSemester</p>
+        </div>
+      </div>
+    </div>
+
+
+</div>

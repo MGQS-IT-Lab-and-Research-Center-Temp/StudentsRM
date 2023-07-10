@@ -2,6 +2,7 @@ using System.Security.Claims;
 using StudentsRM.Helper;
 using StudentsRM.Models;
 using StudentsRM.Models.Auth;
+using StudentsRM.Models.Home;
 using StudentsRM.Models.User;
 using StudentsRM.Repository.Interface;
 using StudentsRM.Service.Interface;
@@ -116,6 +117,34 @@ namespace StudentsRM.Service.Implementation
                 response.Message = $"Could not update the user: {ex.Message}";
                 return response;
             }
+        }
+        
+        public HomeResponseModel AdminDashBoard()
+        {
+            var response = new HomeResponseModel();
+            var totalStudent = _unitOfWork.Students.GetAll(s => s.IsDeleted == false).Count();
+            var totalLecturers = _unitOfWork.Lecturers.GetAll(l => l.IsDeleted == false).Count();
+            var totalCourses = _unitOfWork.Courses.GetAll(c => c.IsDeleted == false).Count();
+            var currentSemester = _unitOfWork.Semesters.Get(s => s.CurrentSemester == true)?.SemesterName ?? "N/A";
+
+            try
+            {
+                response.Data = new AdminViewModel
+                {
+                    TotalStudent = totalStudent,
+                    TotalCourses = totalCourses,
+                    TotalLecturers = totalLecturers,
+                    CurrentSemester = currentSemester 
+                };
+                response.Status = true;
+                response.Message = "Success";
+            }
+            catch (Exception ex)
+            {
+                response.Message = "AN error occurred";
+                return response;
+            }
+            return response;
         }
     }
 }
